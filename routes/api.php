@@ -14,6 +14,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+    'prefix' => 'auth'
+
+], function () {
+
+    Route::post('register', 'AuthController@register');
+    Route::post('login', 'AuthController@login');
+
+});
+
+Route::group(['middleware' => ['jwt.auth']], function() {
+    /*AÑADE AQUI LAS RUTAS QUE QUIERAS PROTEGER CON JWT*/
+
+    Route::get('groups', 'GroupController@index');
+    Route::post('groups', 'GroupController@store');
+    Route::get('groups/data/joinTo/{idGroup}', 'GroupController@joinTo');
+    Route::get('groups/{idGroup}', 'GroupController@show')->middleware('check.group');
+    Route::post('groups/data/createNote/{idGroup}', 'GroupController@createNote')->middleware('check.group');
+
 });
